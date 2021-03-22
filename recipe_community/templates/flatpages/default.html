@@ -1,0 +1,12 @@
+{% extends "base.html" %} 
+{% block title %} {{ flatpage.title }} {% endblock %}
+{% block head %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'recipes/pages/form.css' %}">
+{% endblock %}
+{% block nav %}
+    {% include 'include/nav.html' %}
+{% endblock %}
+{% block content %}
+{{ flatpage.content }}
+{% endblock %}

@@ -1,0 +1,15 @@
+<div class="main__header">
+    <h1 class="main__title">Recipes</h1>
+    <ul class="tags">
+        <p>
+            <form method="get">
+                {% for field in tag_filter.form.tags %}
+                <li class="tags__item">
+                    <span class="tags__label"> {{ field.tag }} {{ field.choice_label }}</span>
+                </li>
+                {% endfor %}
+                <button type="submit">Filter</button>
+            </form>
+        </p>
+    </ul>
+</div>

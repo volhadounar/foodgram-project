@@ -1,0 +1,87 @@
+{% extends "base.html" %} 
+{% block title %} 
+Profile: 
+{% if owner.get_full_name %}
+    {{ owner.get_full_name }}
+    {% else %}
+    {{ owner.username }}
+    {% endif %}
+{% endblock %}
+{% block head %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'recipes/pages/index.css' %}">
+{% endblock %}
+{% block nav %} 
+    {% include 'include/nav.html' %}
+{% endblock %}
+{% block header %}
+    {% if user.is_authenticated %}
+    <h1 class="card__text">You authenticated as</h1>
+    <pre class="card__text">
+        {% if user.get_full_name %}
+        Name: {{ user.get_full_name }}
+        {% else %}
+        Name: {{ user.username }}
+        {% endif %}
+        Email: {{ user.email }}
+    </pre>
+    {% else %}
+    <p class="card__text">You are not logged in</p>
+    <p class="card__text">You can <a href="{% url 'login' %}?next={{ request.path }}">Login</a> if you like.</p>
+    {% endif %}
+
+    <h1 class="main__title">Profile belongs to:
+        {% if owner.get_full_name %}
+        {{ owner.get_full_name }}
+        {% else %}
+        {{ owner.username }}
+        {% endif %}
+    </h1>
+    {% include 'include/header_container.html' %} 
+{% endblock %}
+{% block content %}
+
+<!--<p style="padding: 0 0 2em 0;"><a class="button button_style_light-blue" href="#">Подписаться на автора</a></p>-->
+    <div class="author-subscribe" data-author="{{owner.username}}">
+        {% if user.is_authenticated %}
+            {% if owner != user %}
+            {% csrf_token %}
+            <p style="padding: 0 0 2em 0;">
+                {% if following %}
+                <button class="button button_style_light-blue button_size_subscribe" name="subscribe" >
+                    Unsubscribe
+                </button>
+                {% else %}
+                <button class="button button_style_light-blue button_size_subscribe" name="subscribe" data-out>
+                    Subscribe
+                </button>
+                {% endif %}
+            </p>
+            {% endif %}
+        {% endif %}
+    </div>
+
+    <div class="card-list" >
+        {% load static %}
+        {% for recipe in page %}
+            {% include 'include/item.html' with recipe=recipe %}
+        {% endfor %}
+    </div>
+ 
+  {% include 'include/paginator.html' %}
+  {% block static %}
+  {% load static %}
+  <script src="{% static 'recipes/js/components/MainCards.js' %}"></script>
+
+  <script src="{% static 'recipes/js/components/Purchases.js' %}"></script>
+  <script src="{% static 'recipes/js/components/Favorites.js' %}"></script>
+  <script src="{% static 'recipes/js/components/Subscribe.js' %}"></script>
+
+  <script src="{% static 'recipes/js/config/config.js' %}"></script>
+  <script src="{% static 'recipes/js/components/AuthorRecipe.js' %}"></script>
+  <script src="{% static 'recipes/js/components/Header.js' %}"></script>
+
+  <script src="{% static 'recipes/js/api/Api.js' %}"></script>
+  <script src="{% static 'recipes/authorRecipe.js' %}"></script>
+  {% endblock %}
+{% endblock %}

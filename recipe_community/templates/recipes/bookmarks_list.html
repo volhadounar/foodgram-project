@@ -1,0 +1,39 @@
+{% extends "base.html" %} 
+{% block title %}Bookmarked{% endblock %}
+{% block head %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'recipes/pages/index.css' %}">
+{% endblock %}
+{% block nav %}
+    {% include 'include/nav.html' %}
+{% endblock %}
+{% block header %} {% include 'include/header_container.html' %} {% endblock %}
+{% block content %} 
+
+{% csrf_token %}
+{% load thumbnail %} 
+{% load user_filters %}
+{% load static %}
+
+<div class="card-list">
+
+    {% for recipe in page %}
+        {% include 'include/item.html' with recipe=recipe %}
+    {% endfor %}
+    
+</div>
+{% include 'include/paginator.html' %}
+{% block static %}
+<script src="{% static 'recipes/js/components/MainCards.js' %}"></script>
+
+<script src="{% static 'recipes/js/components/Purchases.js' %}"></script>
+<script src="{% static 'recipes/js/components/Favorites.js' %}"></script>
+
+<script src="{% static 'recipes/js/config/config.js' %}"></script>
+<script src="{% static 'recipes/js/components/CardList.js' %}"></script>
+<script src="{% static 'recipes/js/components/Header.js' %}"></script>
+<script src="{% static 'recipes/js/api/Api.js' %} "></script>
+<script src="{% static 'recipes/favorite.js' %}"></script>
+{% endblock %}
+
+{% endblock %}

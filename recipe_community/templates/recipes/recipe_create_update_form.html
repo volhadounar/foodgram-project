@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+
+{% block title %}Recipes{% endblock %}
+
+{% block head %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'recipes/pages/form.css' %}">
+{% endblock %}
+
+{% block nav %}
+    {% include 'include/nav.html' %}
+{% endblock %}
+
+{% block header %}
+{% if recipe %}
+<h1 class="main__title">Edit Recipe</h1>
+{% else %}
+<h1 class="main__title">New Recipe</h1>
+{% endif %}
+{% endblock %}
+
+{% block content %} 
+{% load user_filters %}
+
+{% block errors %}
+{% include 'include/formerrors.html' %}
+{% endblock%}
+
+<div class="form-container">
+    <form  method="post" class="form" enctype="multipart/form-data" action="">
+        {% csrf_token %}
+
+            <div class="form__group">
+                {{ form.title.errors }}
+                <label for="{{ form.title.id_for_label }}" class="form__label">{{ form.title.label }}
+                    <span class="required">*</span>
+                </label>
+                <div class="form__field-group">
+                    {{ form.title|addclass:"form__input" }}
+
+                    {% if form.title.help_text %}
+                    <p class="help" style="color: gray;">{{ form.title.help_text|safe }}</p>
+                    {% endif %}
+                </div>
+            </div>
+           
+            <div class="form__group">
+                <p class="form__label">Tags</p>
+                <div class="form__field-group">
+
+                    <div class="card__items" style="overflow-y: scroll; height:200px;">
+                      {{ form.tags }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="form__group">
+                <label for="nameIngredient" class="form__label">Ingredients</label>
+                <div class="form__field-group">
+                    <div class="">
+                        <div class="form__dropdown " id="ingredients_container" method='POST'>
+                            <table>
+                                <thead>
+                                    {{ ingredients_formset.management_form }}
+                                    <tr>
+                                        <th>Ingredient</th>
+                                        <th>Quantity</th>
+                                        <th>Units</th>
+                                        <th>Delete?</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    
+                                    {% for i_form in ingredients_formset.forms %}
+                                    <tr class="ingredient-form">
+                                    {{ i_form.id }}
+                                    <td>{{ i_form.ingredient }}</td>
+                                    <td>{{ i_form.amount }}</td>
+                                    <td>{{ i_form.unit }}</td>
+                                    <td>{{ i_form.DELETE }}</td>
+                                    </tr>
+                                
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                            <button style="margin-right: 2.5em" id="add-form" class="button" type="button">Add another</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form__group">
+                {{ form.cooking_time.errors }}
+                <label for="{{ form.cooking_time.id_for_label }}" class="form__label">{{ form.cooking_time.label }}
+                </label>
+                <div class="form__field-group form__field-group_time">
+                    {{ form.cooking_time|addclass:"form__input" }}
+                    <label for="{{ field.cooking_time.id_for_label }}" class="form__label">min</label>
+                    {% if form.cooking_time.help_text %}
+                    <p class="help" style="color: gray;">{{ form.cooking_time.help_text|safe }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+
+            <div class="form__group">
+                {{ form.how_to.errors }}
+                <label for="{{ form.how_to.id_for_label }}" class="form__label">{{ form.how_to.label }}
+                    <span class="required">*</span>
+                </label>
+                <div class="form__field-group">
+                    {{ form.how_to|addclass:"form__textarea" }}
+                    {% if form.how_to.help_text %}
+                    <p class="help" style="color: gray;">{{ form.how_to.help_text|safe }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form__group">
+                {{ form.image.errors }}
+                <label for="{{ form.image.id_for_label }}" class="form__label">{{ form.image.label }}
+                </label>
+                <div class="form__field-group">
+                    {{ form.image }}
+
+                    {% if form.image.help_text %}
+                    <p class="help" style="color: gray;">{{ form.image.help_text|safe }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form__footer">
+                {% if recipe %}
+                <button type="submit" class="button button_style_blue">Save</button>
+                {% else %}
+                <button type="submit" class="button button_style_blue">Create recipe</button>
+                {% endif %}
+            </div>
+
+    </form>
+</div>
+
+{% block static %}
+{% load static %}
+<script src="{% static 'recipes/js/config/config.js' %}"></script>
+<script src="{% static 'recipes/js/components/Header.js' %}"></script>
+<script src="{% static 'recipes/js/utils/debouncing.js' %}"></script>
+<script src="{% static 'recipes/js/api/Api.js' %}"></script>
+
+
+<script>
+    let iForm = document.querySelectorAll(".ingredient-form")
+    let container = document.querySelector("#ingredients_container")
+    let addButton = document.querySelector("#add-form")
+    let totalForms = document.querySelector("#id_recipe_ingredient_set-TOTAL_FORMS")
+
+    let formNum = iForm.length-1
+    addButton.addEventListener('click', addForm)
+
+    function addForm(e){
+        e.preventDefault()
+
+        let newForm = iForm[0].cloneNode(true)
+        let formRegex = RegExp(`ingredient_set-(\\d){1}-`,'g')
+        formNum++
+        newForm.innerHTML = newForm.innerHTML.replace(formRegex, `ingredient_set-${formNum}-`)
+        container.insertBefore(newForm, addButton)
+        
+        totalForms.setAttribute('value', `${formNum+1}`)
+    }
+</script>
+
+{% endblock %}
+
+{% endblock %}

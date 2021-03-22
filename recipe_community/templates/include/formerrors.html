@@ -1,0 +1,12 @@
+{% if form.errors %}
+<div class="alert alert-danger" role="alert">
+    {% for field, errors in form.errors.items %}
+        {% for error in errors %}
+        <p style="color: red; font-family: Arial, sans-serif;" class="card__text">Something went wrong with field '{{field}}'</p>
+        <pre style="border: 1px orange solid; font-family: Arial, sans-serif;" class="card__text">
+        {{ error }}
+        </pre>
+        {% endfor %}
+    {% endfor %}
+</div>
+{% endif %}

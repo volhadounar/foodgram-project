@@ -1,0 +1,62 @@
+<nav class="nav">
+    <div class="nav__container container">
+
+        {% if user.is_authenticated %}
+
+        <ul class="nav__items list">
+            {% url 'recipes:index' as url_index %}
+            {% url 'recipes:subcriptions' as url_subscrib %}
+            {% url 'recipes:recipe_create' as url_recipe_create %}
+            {% url 'recipes:bookmarks' as url_bookmarks %} 
+            {% url 'recipes:order_list' as url_order_list %}
+            {% url 'my_password_change' as url_my_password_change %}
+            {% url 'logout' as url_logout %}
+            <li {% if request.path == url_index %} class="nav__item nav__item_active"{% else %} class="nav__item" {% endif %}>
+                <a href="{{url_index}}" class="nav__link link">Recipes</a>
+            </li>
+            <li {% if request.path == url_subscrib %} class="nav__item nav__item_active"{% else %} class="nav__item" {% endif %}>
+                <a href="{{url_subscrib}}" class="nav__link link">My subscriptions</a></li>
+            <li {% if request.path == url_recipe_create %} class="nav__item nav__item_active"{% else %} class="nav__item" {% endif %}>
+                <a href="{{url_recipe_create}}" class="nav__link link">Create recipe</a>
+            </li>
+            <li {% if request.path == url_bookmarks %} class="nav__item nav__item_active"{% else %} class="nav__item" {% endif %}>
+                <a href="{{url_bookmarks}}" class="nav__link link">Bookmarked</a>
+            </li>
+            <li {% if request.path == url_order_list %} class="nav__item nav__item_active"{% else %} class="nav__item" {% endif %}>
+                <a href="{{url_order_list}}" class="nav__link link">Shopping list</a> <span class="badge badge_style_blue nav__badge" id="counter">{{user.orders.count}}</span>
+            </li>
+        </ul>
+        <ul class="nav__items list">
+            <li {% if request.path == url_my_password_change %} class="nav__item nav__item_active"{% else %} class="nav__item" {% endif %}>
+                <a href="{{url_my_password_change}}" class="nav__link link">Change password</a>
+            </li>
+            <li {% if request.path == url_logout %} class="nav__item nav__item_active"{% else %} class="nav__item" {% endif %}>
+                <a href="{{url_logout}}" class="nav__link link">Log Out</a>
+            </li>
+        </ul>
+
+        {% else %}
+        {% url 'recipes:index' as url_index %}
+        {% url 'login' as url_login %}
+        {% url 'signup' as url_signup %}
+
+        <ul class="nav__items list">
+            <li {% if request.path == url_index %} class="nav__item nav__item_active"{% else %} class="nav__item" {% endif %}>
+                <a href="{{url_index}}" class="nav__link link">Recipes</a>
+            </li>
+            <li class="nav__item nav__item_disabled">
+                <a href="#" class="nav__link link">Shopping list <span class="badge badge_style_blue nav__badge" id="counter">4</span></a>
+            </li>
+        </ul>
+        <ul class="nav__items list">
+            <li {% if request.path == url_login %} class="nav__item nav__item_active"{% else %} class="nav__item" {% endif %}>
+                <a href="{{url_login}}" class="nav__link link">Log In</a>
+            </li>
+            <li {% if request.path == url_signup %} class="nav__item nav__item_active"{% else %} class="nav__item" {% endif %}>
+                <a href="{{url_signup}}" class="button button_style_blue">Create account</a>
+            </li>
+        </ul>
+
+        {% endif %}
+    </div>
+</nav>

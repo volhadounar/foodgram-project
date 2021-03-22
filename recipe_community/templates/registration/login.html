@@ -1,0 +1,69 @@
+{% extends "base.html" %} 
+{% block title %}Log in{% endblock %}
+{% block head %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'recipes/pages/form.css' %}">
+{% endblock %}
+{% block nav %}
+    {% include 'include/nav.html' %}
+{% endblock %}
+{% block header %}
+<div class="main__header">
+    <h1 class="main__title">Log In</h1>
+</div>
+{% endblock %}
+
+{% block errors %}
+{% include 'include/formerrors.html' %}
+{% endblock%}
+
+{% block content %}
+    <div class="form-container">
+        <form method="post" class="form" action="{% url 'login' %}" >
+            {% csrf_token %}
+            <div class="form__group">
+                <label for="id_username" class="form__label">Name</label>
+                <div class="form__field-group">
+                    <input type="text" name="username" id="id_username" class="form__input">
+                    <span class="form__error"></span>
+                </div>
+            </div>
+            <div class="form__group">
+                <label for="id_password" class="form__label">Password</label>
+                <div class="form__field-group">
+                    <input type="password" name="password" id="id_password" class="form__input">
+                </div>
+            </div>
+            <div class="form__footer">
+                <button type="submit" class="button button_style_blue">Log In</button>
+                {% if next %}
+                    <input type="hidden" name="next" value="{{ next }}" />
+                {% else %}
+                    <input type="hidden" name="next" value="{% url 'recipes:index' %}"/>
+                {% endif %}
+                <a href="{% url 'password_reset' %}" class="form__forgot-link">Forgot your password?</a>
+            </div>
+        </form>
+    </div>
+
+    {% block static %}
+    {% load static %}
+    <script src="{% static 'recipes/js/components/MainCards.js' %}"></script>
+    
+    <script src="{% static 'recipes/js/components/Purchases.js' %}"></script>
+    <script src="{% static 'recipes/js/components/Favorites.js' %}"></script>
+    
+    <script src="{% static 'recipes/js/config/config.js' %}"></script>
+    <script src="{% static 'recipes/js/components/CardList.js' %}"></script>
+    <script src="{% static 'recipes/js/components/Header.js' %}"></script>
+    
+    <script src="{% static 'recipes/js/api/Api.js' %} "></script>
+    
+    {% if user.is_authenticated %}
+    <script src="{% static 'recipes/indexAuth.js' %}"></script>
+    {% else %}
+    <script src="{% static 'recipes/indexNotAuth.js' %}"></script>
+    {% endif %}
+
+    {% endblock %}
+ {% endblock %}

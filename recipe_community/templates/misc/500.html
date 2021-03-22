@@ -1,0 +1,15 @@
+{% extends "recipes/base.html" %} 
+{% block title %} Error 500 {% endblock %}
+{% block content %}
+
+<main role="main" class="container">
+<div class="row">
+    <div class="col-md-12">
+        <h1>Error 500</h1>
+        <p class="lead">Server error, refresh the page or contact later</p>
+        <p class="lead"><a href="{% url 'recipes:index' %}">Go back to the main page</a></p>
+    </div>
+</div>
+</main>
+
+{% endblock %} 

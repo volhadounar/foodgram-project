@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% load user_filters %}
+{% block title %}My subscriptions{% endblock %}
+{% block head %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'recipes/pages/myFollow.css' %}">
+{% endblock %}
+{% block nav %}
+    {% include 'include/nav.html' %}
+{% endblock %}
+{% block content %} 
+
+{% load thumbnail %} 
+{% load user_filters %}
+{% load static %}
+
+{% block header %} My subscriptions {% endblock %}
+
+<div class="card-list">
+    {% for us in page %}
+        <div class="card-user" data-author="{{us.username}}">
+            {% csrf_token %}
+            <div class="card-user__header">
+                <h2 class="card-user__title">
+                    {% if us.get_full_name %}
+                        {{ us.get_full_name }}
+                    {% else %}
+                     {{ us.username }}
+                 {% endif %}
+                 </h2>
+            </div>
+
+            <div class="card-user__body">
+                <ul class="card-user__items">
+                    {% with  shift=more|get_item:us.username %}
+                            {% for recipe in us.recipes.all %}
+
+                                {% if  forloop.counter <= shift %} 
+                                <li class="card-user__item">
+                                <div class="recipe">
+                                    {% if recipe.image %}
+                                    <img src="{{recipe.image.url}}" alt="Image for {{recipe.title}}" class="recipe__image">
+                                    {% endif %}
+                                    <h3 class="recipe__title">{{recipe.title}}</h3>
+                                    <p class="recipe__text"><span class="icon-time"></span>{{recipe.cooking_time}}min.</p>
+                                </div>
+                                </li>
+                                {% endif %}
+                            {% endfor %}
+
+                    {% endwith %}
+                    <li class="card-user__item">
+                        <a href="?morefor_{{us.username}}=true" class="card-user__link link">Show more...</a>
+                    </li>
+                </ul>
+            </div>
+       
+            <div class="card-user__footer">
+                <button class="button button_style_light-blue button_size_auto" name="subscribe">Unsubscribe</button>
+            </div>
+        </div>
+    {% endfor %}
+    
+</div>
+
+
+
+
+{% include 'include/paginator.html' %}
+{% block static %}
+{% load static %}
+
+<script src="{% static 'recipes/js/components/MainCards.js' %}"></script>
+<script src="{% static 'recipes/js/components/MyFollow.js' %}"></script>
+<script src="{% static 'recipes/js/components/Subscribe.js' %}"></script>
+<script src="{% static 'recipes/js/config/config.js' %}"></script>
+<script src="{% static 'recipes/js/components/Header.js' %}"></script>
+<script src="{% static 'recipes/js/api/Api.js' %} "></script>
+<script src="{% static 'recipes/myFollow.js' %}"></script>
+{% endblock %}
+
+{% endblock %}
+
+    
