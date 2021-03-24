@@ -1,15 +1,42 @@
 from django.contrib.auth import get_user_model
 from django.db import models
 
+from multiselectfield import MultiSelectField
 
 User = get_user_model()
+
+vegetarian = 100
+macrobiotic = 150
+mediterrenean = 160
+vegan = 170
+raw = 180
+old = 190
+fastfood = 200
+baking = 210
+glutfree = 220
+
+TAG_CHOICES = (
+    (vegetarian, 'vegetarian'),
+    (macrobiotic, 'macrobiotic diet'),
+    (mediterrenean, 'mediterrenean diet'),
+    (vegan, 'vegan diet'),
+    (raw, 'raw food'),
+    (old, 'old recipes'),
+    (fastfood, 'fastfood'),
+    (baking, 'baking'),
+    (glutfree, 'gluten free')
+)
 
 
 class Ingredient(models.Model):
     name = models.CharField(
-        'Name', max_length=64,
+        verbose_name='Name', max_length=64,
         help_text='Please enter an ingredient name of max 64 characters.',
         unique=True)
+
+    class Meta:
+        verbose_name = 'Ingredient'
+        verbose_name_plural = 'Ingredients'
 
     def __str__(self):
         return self.name
@@ -17,140 +44,104 @@ class Ingredient(models.Model):
 
 class Recipe(models.Model):
     title = models.CharField(
-        'Recipe name', max_length=64,
-        help_text='Please give a short name to the recipe.', null=False)
-    # slug = models.SlugField(
-    #                 'Slug', max_length=64,
-    #                 help_text='Please specify an address for the task page. \
-    #                 Use only Latin, numbers, hyphens and underscores.',
-    #                 unique=True)
+        verbose_name='Recipe name', max_length=64,
+        help_text='Please give a short name to the recipe.')
     from_who = models.ForeignKey(User, related_name='recipes',
                                  verbose_name='From',
                                  db_index=True, on_delete=models.CASCADE,
-                                 help_text='This recipe from.', null=False)
-    how_to = models.TextField('How to', max_length=1024,
-                              help_text='How to make.', null=False)
-    cooking_time = models.IntegerField(
-        'Cooking time',
+                                 help_text='This recipe from.',)
+    how_to = models.TextField(verbose_name='How to', max_length=1024,
+                              help_text='How to make.')
+    cooking_time = models.PositiveIntegerField(
+        verbose_name='Cooking time',
         help_text='Please enter a cooking time in minutes.',
         null=True
     )
     ingredients = models.ManyToManyField(Ingredient,
                                          verbose_name='Ingredients',
-                                         through='Recipe_Ingredient',
+                                         through='RecipeIngredient',
                                          related_name='for_recipes')
-    tags = models.ManyToManyField('Tag', through='Recipe_Tag',
-                                  verbose_name='Tags')
-    favorite_for = models.ManyToManyField(User, through='Bookmarks',
+    favorite_for = models.ManyToManyField(User, through='Bookmark',
                                           related_name='favorite_recipes')
     orders = models.ManyToManyField(User, through='Order',
-                                    related_name='orders')
-    image = models.ImageField('Illustration', upload_to='image/', blank=True,
+                                    related_name='ordered_recipes')
+    image = models.ImageField(verbose_name='Illustration', upload_to='image/',
+                              blank=True,
                               null=True,
                               help_text='Upload image.')
-    pub_date = models.DateTimeField('Date of publication', auto_now_add=True)
-
-    def get_absolute_url(self):
-        return '/%s/' % self.id
-
-    def display_tags_as_str(self):
-        """Create a string for the Tag.
-           This is required to display tags in Admin."""
-        return ', '.join(str(tag.name) for tag in self.tags.all())
+    pub_date = models.DateTimeField(verbose_name='Date of publication',
+                                    auto_now_add=True)
+    tags = MultiSelectField(verbose_name='Tags', choices=TAG_CHOICES)
 
     def display_tags_as_list(self):
         """Create a list for the Tag.
            This is required to display tags in Recipe's page."""
-        return [tag.name for tag in self.tags.all()]
+        return str(self.tags).split(',')
 
     def display_ingredients_as_list(self):
         """Create a list for the Ingredients set.
            This is required to display ingredients in Recipe's page."""
-        return [(i.ingredient.name, i.amount, i.unit)
-                for i in self.recipe_ingredient_set.all()]
+        query_set = self.recipeingredient_set.values_list(
+            'ingredient__name', 'amount', 'unit'
+        )
+        return [(name, amount, unit) for name, amount, unit in query_set]
 
     def display_ingredients_as_str(self):
         """Create a string for the Ingredients set.
            This is required to display ingredients in Recipe's page."""
-        return ', '.join(i.name for i in self.ingredients.all())
+        return ', '.join(
+            name for name in self.ingredients.values_list('name', flat=True)
+        )
 
     def display_ingredients(self):
         """Create a string for the Ingredient.
            This is required to display tags in Admin."""
-        return '; '.join(i.ingredient.name + ','
-                         + str(i.amount) + ''
-                         + (str(i.unit) if i.unit else '')
-                         for i in self.ingredients.through.objects.all()
-                         )
+        return '; '.join(
+            name + ',' + str(amount) + unit
+            for name, amount, unit
+            in self.ingredients.through.objects.values_list(
+                'ingredient__name', 'amount', 'unit')
+        )
 
     def display_bookmarked(self):
         """Create a string for the favorite_for field.
            This is required to display tags in Admin."""
         return str(self.favorite_for.all().count()) + ' times'
 
-    display_tags_as_str.short_description = 'tags'
     display_tags_as_list.short_description = 'list_of_tags'
     display_ingredients.short_description = 'ingredients'
     display_bookmarked.short_description = 'bookmarked'
 
+    class Meta:
+        ordering = ['-pub_date']
+        verbose_name = 'Recipe'
+        verbose_name_plural = 'Recipes'
+
     def __str__(self):
         return self.title
 
-    class Meta:
-        ordering = ['-pub_date']
+    def get_absolute_url(self):
+        return '/%s/' % self.id
 
 
-class Recipe_Ingredient(models.Model):
+class RecipeIngredient(models.Model):
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
     ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
-    amount = models.IntegerField(null=True)
-    unit = models.CharField('Measurement units', max_length=32, default='g',
+    amount = models.PositiveIntegerField()
+    unit = models.CharField(verbose_name='Measurement units',
+                            max_length=32, default='g',
                             null=True, blank=True)
 
-    def __str__(self):
-        return "Recipe " + str(self.recipe.title) + " <--> ingredient " \
-            + str(self.ingredient.name)
-
-
-class Tag(models.Model):
-    TAG_CHOICES = (
-        ('vegetarian', 'vegetarian'),
-        ('macrobiotic diet', 'macrobiotic diet'),
-        ('mediterrenean diet', 'mediterrenean diet'),
-        ('vegan diet', 'vegan diet'),
-        ('raw food', 'raw food'),
-        ('old recipes', 'old recipes'),
-        ('fastfood', 'fastfood'),
-        ('baking', 'baking'),
-        ('gluten free', 'gluten free')
-    )
-    name = models.CharField(
-        'Name',
-        help_text='Please select a name from the available.',
-        choices=TAG_CHOICES, default='macrobiotic diet',
-        unique=True, max_length=20)
-    recipes = models.ManyToManyField('Recipe', through='Recipe_Tag')
-
-    def __str__(self):
-        return str(self.name)
-
-
-class Recipe_Tag(models.Model):
-    tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
-
     class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=['tag', 'recipe'],
-                                    name='unique_recipe_tag'),
-        ]
+        verbose_name = 'RecipeAndIngredinents'
+        verbose_name_plural = 'RecipeAndIngredinents'
 
     def __str__(self):
-        return "Tag " + str(self.tag.name) + " <--> recipe " + \
-               str(self.recipe.title)
+        return ("Recipe " + str(self.recipe.title) + " <--> ingredient "
+                + str(self.ingredient.name))
 
 
-class Bookmarks(models.Model):
+class Bookmark(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
 
@@ -159,10 +150,12 @@ class Bookmarks(models.Model):
             models.UniqueConstraint(fields=['user', 'recipe'],
                                     name='unique_bookmarks'),
         ]
+        verbose_name = 'Bookmark'
+        verbose_name_plural = 'Bookmarks'
 
     def __str__(self):
-        return "User " + str(self.user.id) + " <--> recipe " + \
-               str(self.recipe.id)
+        return ("User " + str(self.user.id) + " <--> recipe "
+                + str(self.recipe.id))
 
 
 class Order(models.Model):
@@ -174,20 +167,24 @@ class Order(models.Model):
             models.UniqueConstraint(fields=['user', 'recipe'],
                                     name='unique_order'),
         ]
+        verbose_name = 'Order'
+        verbose_name_plural = 'Orders'
 
     def __str__(self):
-        return "User " + str(self.user.id) + " <--> recipe " + \
-               str(self.recipe.id)
+        return ("User " + str(self.user.id) + " <--> recipe "
+                + str(self.recipe.id))
 
 
 class Follow(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE,
-                             related_name='follower', null=False)
+                             related_name='follower')
     author = models.ForeignKey(User, on_delete=models.CASCADE,
-                               related_name='following', null=False)
+                               related_name='following')
 
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=['user', 'author'],
                                     name='unique_follow'),
         ]
+        verbose_name = 'Follow'
+        verbose_name_plural = 'Follow'

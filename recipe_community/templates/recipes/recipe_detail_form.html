@@ -15,10 +15,10 @@
 {% load user_filters %}
 {% load static %}
 
-<div class="single-card" data-id="{{recipe.id}}" data-author="{{recipe.from_who.username}}">
+<div class="single-card" data-id="{{ recipe.id }}" data-author="{{ recipe.from_who.username }}">
     
     {% if recipe.image %}
-    <img src="{{recipe.image.url}}" alt="Image for {{recipe.title}}" class="single-card__image">
+    <img src="{{ recipe.image.url }}" alt="Image for {{ recipe.title }}" class="single-card__image">
     {% endif %}
 
     <div class="single-card__info">
@@ -62,9 +62,15 @@
         </div>
         <ul class="single-card__items">
            
-            <li class="single-card__item"><button class="button button_style_blue" name="purchases" data-out><span class="icon-plus"></span> Buy </button></li>
+            
         
         {% if user.is_authenticated %}
+            {% if recipe|is_bought:user %}
+                <button class="button button_style_light-blue" name="purchases"><span class="icon-plus button__icon"></span>Remove from shopping list</button>
+            {% else %}
+                <button class="button button_style_light-blue" name="purchases" data-out><span class="icon-plus button__icon"></span>Buy</button>
+            {% endif %}
+
             {% if recipe.from_who != user %}
                 {% if following %}
                 <button class="button button_style_light-blue button_size_subscribe" name="subscribe" >
@@ -76,6 +82,12 @@
                 </button>
                 {% endif %}
             {% endif %}
+        {% else %}
+            {% if recipe.id in request.session.ordered_recipes %}
+            <button class="button button_style_light-blue" name="purchases"><span class="icon-plus button__icon"></span>Remove from shopping list</button>
+            {% else %}
+            <button class="button button_style_light-blue" name="purchases" data-out><span class="icon-plus button__icon"></span>Buy</button>
+            {% endif %}
         {% endif %}
         </ul>
         <div class="single-card__section">
@@ -83,7 +95,7 @@
             <div class="single-card__items single-card__items_column">
                 {% for name, amount, unit in recipe.display_ingredients_as_list %}
                 <p class=" single-card__section-item">
-                {{name}} - {{amount}}{{unit}}
+                {{ name }} - {{ amount }}{{ unit }}
                 </p>
                 {% endfor %}
             </div>

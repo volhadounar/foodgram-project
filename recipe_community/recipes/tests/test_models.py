@@ -1,6 +1,6 @@
 import datetime
 
-from recipes.models import Recipe, Tag, Ingredient
+from recipes.models import Recipe, Ingredient
 
 from django.contrib.auth import get_user_model
 
@@ -87,25 +87,3 @@ class IngredientModelTest(TestCase):
         expected_object_name = ingredient.name
         self.assertEquals(expected_object_name, str(ingredient))
 
-
-class TagModelTest(TestCase):
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        cls.tag = Tag.objects.create()
-
-    def test_tag_labels(self):
-        tag = TagModelTest.tag
-        verbose = tag._meta.get_field('name').verbose_name
-        self.assertEquals(verbose, 'Name')
-
-    def test_tag_help_text(self):
-        tag = TagModelTest.tag
-        help_text = tag._meta.get_field('name').help_text
-        self.assertEquals(help_text, 'Please select a name from the available.')
-
-    def test_object_name_is_name_field(self):
-        """__str__  tag - is the string with the content of tag.name"""
-        tag = TagModelTest.tag
-        expected_object_name = tag.name
-        self.assertEquals(str(expected_object_name), str(tag))

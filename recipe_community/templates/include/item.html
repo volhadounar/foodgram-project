@@ -1,11 +1,11 @@
-<div class="card" data-id="{{recipe.id}}">
+<div class="card" data-id="{{ recipe.id }}">
 
     {% load thumbnail %} 
     {% load user_filters %}
     {% load static %}
     <a href="#" class="link" target="_blank">
         {% if recipe.image %}
-        <img src="{{recipe.image.url}}" alt="Image for {{recipe.title}}" class="card__image">
+        <img src="{{ recipe.image.url }}" alt="Image for {{ recipe.title }}" class="card__image">
         {% endif %}
     </a>
    
@@ -18,7 +18,7 @@
         </ul>
         <div>
             <p>
-                {{recipe.display_ingredients_as_str}}
+                {{ recipe.display_ingredients_as_str }}
             </p>
         </div>
         <div class="card__items card__items_column">
@@ -44,17 +44,21 @@
     </div>
     <div class="card__footer">
         {% if user.is_authenticated %}
-
             {% if recipe|is_bought:user %}
-            <button class="button button_style_light-blue" name="purchases"><span class="icon-plus button__icon"></span>Remove from shopping list</button>
+                <button class="button button_style_light-blue" name="purchases"><span class="icon-plus button__icon"></span>Remove from shopping list</button>
             {% else %}
-            <button class="button button_style_light-blue" name="purchases" data-out><span class="icon-plus button__icon"></span>Buy</button>
+                <button class="button button_style_light-blue" name="purchases" data-out><span class="icon-plus button__icon"></span>Buy</button>
             {% endif %}
-
             {% if recipe|is_bookmarked:user %}
             <button class="button button_style_none" name="favorites" ><span class="icon-favorite icon-favorite_active"></span></button>
             {% else %}
             <button class="button button_style_none" name="favorites" class="shopping-list__button link" data-out ><span class="icon-favorite"></span></button>
+            {% endif %}
+        {% else %}
+            {% if recipe.id in request.session.ordered_recipes %}
+            <button class="button button_style_light-blue" name="purchases"><span class="icon-plus button__icon"></span>Remove from shopping list</button>
+            {% else %}
+            <button class="button button_style_light-blue" name="purchases" data-out><span class="icon-plus button__icon"></span>Buy</button>
             {% endif %}
         {% endif %}
     </div>

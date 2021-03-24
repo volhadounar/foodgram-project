@@ -1,4 +1,3 @@
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 from django.http import FileResponse
@@ -8,12 +7,29 @@ from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 from django.views.generic import DetailView, ListView, UpdateView
 
+from recipe_community.settings import PAGINATION_CNT_ON_PAGE
+
 from .filters import TagFilter
 from .forms import CreateUpdateRecipeForm, IngredientFormset
-from .models import Bookmarks, Follow, Order, Recipe, User
+from .models import Bookmark, Follow, Order, Recipe, User
 from .owner import OwnerCreateView, OwnerDeleteView, OwnerUpdateView
 from .pdf import BuildPdf
-from .updater import CreateDeleteView
+from .updater import CreateDeleteOwnedView, CreateDeleteView
+
+
+def put_filtered_paged_recipe_list(request, context: dict):
+    recipe_list = context.get('recipe_list', [])
+    if len(recipe_list) == 0:
+        return
+    flt = TagFilter(request.GET,
+                    queryset=recipe_list)
+    if len(request.GET.get('tags', [])):
+        paginator = Paginator(flt.qs, PAGINATION_CNT_ON_PAGE)
+    else:
+        paginator = Paginator(recipe_list, PAGINATION_CNT_ON_PAGE)
+    page_number = request.GET.get('page')
+    context['page'] = paginator.get_page(page_number)
+    context['tag_filter'] = flt
 
 
 class ProfileView(ListView):
@@ -28,16 +44,7 @@ class ProfileView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        recipe_list = context.get('recipe_list', None)
-        flt = TagFilter(self.request.GET,
-                        queryset=recipe_list)  # + without queryset
-        if len(self.request.GET.get('tags', [])):
-            paginator = Paginator(flt.qs, 9)
-        else:
-            paginator = Paginator(recipe_list, 9)
-        page_number = self.request.GET.get('page')
-        context['page'] = paginator.get_page(page_number)
-        context['tag_filter'] = flt
+        put_filtered_paged_recipe_list(self.request, context)
         user_id = self.kwargs.get('pk', 0)
         owner = get_object_or_404(User, id=user_id)
         context['owner'] = owner
@@ -67,12 +74,9 @@ class RecipeCreateView(OwnerCreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        if self.request.method == 'POST':
-            context['ingredients_formset'] = IngredientFormset(
-                self.request.POST, self.request.FILES or None
-            )
-        else:
-            context['ingredients_formset'] = IngredientFormset()
+        context['ingredients_formset'] = IngredientFormset(
+            self.request.POST or None, self.request.FILES or None
+        )
         return context
 
     def form_valid(self, main_form):
@@ -99,13 +103,11 @@ class RecipeUpdateView(OwnerUpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        recipe = context.get('recipe', None)
-        if self.request.method == 'POST':
-            context['ingredients_formset'] = IngredientFormset(
-                self.request.POST, self.request.FILES or None, instance=recipe
-            )
-        else:
-            context['ingredients_formset'] = IngredientFormset(instance=recipe)
+        recipe = context.get('recipe')
+        context['ingredients_formset'] = IngredientFormset(
+            self.request.POST or None, self.request.FILES or None,
+            instance=recipe
+        )
         return context
 
     def form_valid(self, main_form):
@@ -137,16 +139,7 @@ class RecipeAllView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        recipe_list = context.get('recipe_list', None)
-        flt = TagFilter(self.request.GET,
-                        queryset=recipe_list)  # + without queryset
-        if len(self.request.GET.get('tags', [])):
-            paginator = Paginator(flt.qs, 9)
-        else:
-            paginator = Paginator(recipe_list, 9)
-        page_number = self.request.GET.get('page')
-        context['page'] = paginator.get_page(page_number)
-        context['tag_filter'] = flt
+        put_filtered_paged_recipe_list(self.request, context)
         return context
 
 
@@ -162,8 +155,8 @@ class SubscriptionListView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        user_list = context.get('user_list', None)
-        paginator = Paginator(user_list, 9)
+        user_list = context.get('user_list', [])
+        paginator = Paginator(user_list, PAGINATION_CNT_ON_PAGE)
         page_number = self.request.GET.get('page')
         context['page'] = paginator.get_page(page_number)
         for user in paginator.get_page(page_number):
@@ -177,18 +170,18 @@ class SubscriptionListView(LoginRequiredMixin, ListView):
         return context
 
 
-class BookmarkChangeView(CreateDeleteView):
+class BookmarkChangeView(CreateDeleteOwnedView):
     def post(self, *args, **kwargs):
         pk = kwargs.get('pk', 0)
         recipe = get_object_or_404(Recipe, id=pk)
-        Bookmarks.objects.get_or_create(user=self.request.user, recipe=recipe)
+        Bookmark.objects.get_or_create(user=self.request.user, recipe=recipe)
         return redirect(reverse_lazy('recipes:bookmarks'))
 
     def delete(self, *args, **kwargs):
         pk = kwargs.get('pk', 0)
         recipe = get_object_or_404(Recipe, id=pk)
-        Bookmarks.objects.filter(user=self.request.user,
-                                 recipe=recipe).delete()
+        Bookmark.objects.filter(user=self.request.user,
+                                recipe=recipe).delete()
         return redirect(reverse_lazy('recipes:bookmarks'))
 
 
@@ -197,46 +190,32 @@ class BookmarksListView(LoginRequiredMixin, ListView):
     template_name = 'recipes/bookmarks_list.html'
 
     def get_queryset(self, *args, **kwargs):
-        iam = get_object_or_404(User, id=self.request.user.id)
-        return iam.favorite_recipes.all()
+        return self.request.user.favorite_recipes.all()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        recipe_list = context.get('recipe_list', None)
-        flt = TagFilter(self.request.GET, queryset=recipe_list)
-        if len(self.request.GET.get('tags', [])):
-            paginator = Paginator(flt.qs, 9)
-        else:
-            paginator = Paginator(recipe_list, 9)
-        page_number = self.request.GET.get('page')
-        context['page'] = paginator.get_page(page_number)
-        context['tag_filter'] = flt
+        put_filtered_paged_recipe_list(self.request, context)
         return context
 
 
-class OrderListView(LoginRequiredMixin, ListView):
+class OrderListView(ListView):
     model = Recipe
     template_name = 'recipes/order_list.html'
 
     def get_queryset(self, *args, **kwargs):
-        iam = get_object_or_404(User, id=self.request.user.id)
-        return iam.orders.all()
+        if self.request.user.is_authenticated:
+            return self.request.user.ordered_recipes.all()
+        ordered_ids = self.request.session.get('ordered_recipes', [])
+        recipe_list = Recipe.objects.filter(id__in=ordered_ids)
+        return recipe_list
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        recipe_list = context.get('recipe_list', None)
-        flt = TagFilter(self.request.GET, queryset=recipe_list)
-        if len(self.request.GET.get('tags', [])):
-            paginator = Paginator(flt.qs, 9)
-        else:
-            paginator = Paginator(recipe_list, 9)
-        page_number = self.request.GET.get('page')
-        context['page'] = paginator.get_page(page_number)
-        context['tag_filter'] = flt
+        put_filtered_paged_recipe_list(self.request, context)
         return context
 
 
-class FollowChangeView(CreateDeleteView):
+class FollowChangeView(CreateDeleteOwnedView):
     def post(self, *args, **kwargs):
         username = kwargs.get('username', '')
         if self.request.user.get_username() == username:
@@ -261,28 +240,49 @@ class OrderChangeView(CreateDeleteView):
     def post(self, *args, **kwargs):
         pk = kwargs.get('pk', 0)
         recipe = get_object_or_404(Recipe, id=pk)
-        Order.objects.get_or_create(user=self.request.user, recipe=recipe)
+        if self.request.user.is_authenticated:
+            Order.objects.get_or_create(user=self.request.user, recipe=recipe)
+        else:
+            if 'ordered_recipes' not in self.request.session:
+                self.request.session['ordered_recipes'] = []
+            recipe_list_ids = self.request.session['ordered_recipes']
+            if pk not in recipe_list_ids:
+                recipe_list_ids.append(pk)
+            self.request.session['ordered_recipes'] = recipe_list_ids
         return redirect(reverse_lazy('recipes:order_list'))
 
     def delete(self, *args, **kwargs):
         pk = kwargs.get('pk', 0)
         recipe = get_object_or_404(Recipe, id=pk)
-        Order.objects.filter(user=self.request.user, recipe=recipe).delete()
+        if self.request.user.is_authenticated:
+            Order.objects.filter(user=self.request.user,
+                                 recipe=recipe).delete()
+        elif 'ordered_recipes' not in self.request.session:
+            return redirect(reverse_lazy('recipes:order_list'))
+        recipe_list_ids = self.request.session['ordered_recipes']
+        index = recipe_list_ids.index(pk)
+        del recipe_list_ids[index]
+        self.request.session['ordered_recipes'] = recipe_list_ids
         return redirect(reverse_lazy('recipes:order_list'))
 
 
-@login_required
 def orders_view(request):
+    if request.user.is_authenticated:
+        query = request.user.ordered_recipes.all()
+    else:
+        ordered_ids = request.session.get('ordered_recipes', [])
+        query = Recipe.objects.filter(id__in=ordered_ids)
     res = {}
-    for item in request.user.orders.all():
-        for i in item.recipe_ingredient_set.all():
-            if i not in res:
-                res[i.ingredient.name] = [i.amount, i.unit]
+    for recipe in query:
+        for item in recipe.recipeingredient_set.all():
+            if item not in res:
+                res[item.ingredient.name] = [item.amount, item.unit]
             else:
-                res[i.ingredient.name][0] += i.amount
+                res[item.ingredient.name][0] += item.amount
 
     buffer = BuildPdf(res, request.user)
-    return FileResponse(buffer, as_attachment=True, filename='hello.pdf')
+    return FileResponse(buffer, as_attachment=True,
+                        filename='shoppinglist.pdf')
 
 
 def page_not_found(request, exception):

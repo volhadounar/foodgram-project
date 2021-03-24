@@ -1,17 +1,24 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, DeleteView, ListView, UpdateView
+from django.views.generic.detail import SingleObjectMixin
 
 
-class OwnerUpdateView(LoginRequiredMixin, UpdateView):
+class MySingleObjectMixin(SingleObjectMixin):
     def get_queryset(self):
-        qs = super(OwnerUpdateView, self).get_queryset()
+        qs = super().get_queryset()
         return qs.filter(from_who=self.request.user)
 
 
-class OwnerDeleteView(LoginRequiredMixin, DeleteView):
-    def get_queryset(self):
-        qs = super(OwnerDeleteView, self).get_queryset()
-        return qs.filter(from_who=self.request.user)
+class OwnerListView(LoginRequiredMixin, MySingleObjectMixin, ListView):
+    pass
+
+
+class OwnerUpdateView(LoginRequiredMixin, MySingleObjectMixin, UpdateView):
+    pass
+
+
+class OwnerDeleteView(LoginRequiredMixin, MySingleObjectMixin, DeleteView):
+    pass
 
 
 class OwnerCreateView(LoginRequiredMixin, CreateView):
@@ -19,10 +26,4 @@ class OwnerCreateView(LoginRequiredMixin, CreateView):
         object = form.save(commit=False)
         object.from_who = self.request.user
         object.save()
-        return super(OwnerCreateView, self).form_valid(form)
-
-
-class OwnerListView(LoginRequiredMixin, ListView):
-    def get_queryset(self, *args, **kwargs):
-        qs = super(OwnerListView, self).get_queryset()
-        return qs.filter(from_who=self.request.user)
+        return super().form_valid(form)

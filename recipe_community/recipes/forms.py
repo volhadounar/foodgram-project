@@ -5,8 +5,8 @@ from . import models
 
 
 class CreateUpdateRecipeForm(forms.ModelForm):
-    tags = forms.ModelMultipleChoiceField(
-        queryset=models.Tag.objects.all(),
+    tags = forms.MultipleChoiceField(
+        choices=models.TAG_CHOICES,
         widget=forms.CheckboxSelectMultiple,
         required=False
     )
@@ -24,7 +24,7 @@ class IngredientForm(forms.ModelForm):
     )
 
     class Meta:
-        model = models.Recipe_Ingredient
+        model = models.RecipeIngredient
         fields = ['ingredient', 'amount', 'unit']
         widgets = {
             'ingredient': forms.Select(attrs={'id': 'nameIngredient',
@@ -48,7 +48,7 @@ class CustomInlineFormSet(BaseInlineFormSet):
 
 IngredientFormset = forms.inlineformset_factory(
     models.Recipe,
-    models.Recipe_Ingredient,
+    models.RecipeIngredient,
     form=IngredientForm,
     extra=1,
     can_delete=True

@@ -2,7 +2,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import View
 
 
-class CreateDeleteView(LoginRequiredMixin, View):
+class CreateDeleteView(View):
     http_method_names = ['post', 'delete']
 
     def dispatch(self, *args, **kwargs):
@@ -11,4 +11,8 @@ class CreateDeleteView(LoginRequiredMixin, View):
             return self.post(*args, **kwargs)
         if method == 'delete':
             return self.delete(*args, **kwargs)
-        return super(CreateDeleteView, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
+
+
+class CreateDeleteOwnedView(LoginRequiredMixin, CreateDeleteView):
+    pass

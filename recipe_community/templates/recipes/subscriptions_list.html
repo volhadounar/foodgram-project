@@ -39,10 +39,10 @@
                                 <li class="card-user__item">
                                 <div class="recipe">
                                     {% if recipe.image %}
-                                    <img src="{{recipe.image.url}}" alt="Image for {{recipe.title}}" class="recipe__image">
+                                    <img src="{{ recipe.image.url }}" alt="Image for {{ recipe.title }}" class="recipe__image">
                                     {% endif %}
                                     <h3 class="recipe__title">{{recipe.title}}</h3>
-                                    <p class="recipe__text"><span class="icon-time"></span>{{recipe.cooking_time}}min.</p>
+                                    <p class="recipe__text"><span class="icon-time"></span>{{ recipe.cooking_time }}min.</p>
                                 </div>
                                 </li>
                                 {% endif %}
@@ -50,7 +50,7 @@
 
                     {% endwith %}
                     <li class="card-user__item">
-                        <a href="?morefor_{{us.username}}=true" class="card-user__link link">Show more...</a>
+                        <a href="?morefor_{{ us.username} }=true" class="card-user__link link">Show more...</a>
                     </li>
                 </ul>
             </div>
