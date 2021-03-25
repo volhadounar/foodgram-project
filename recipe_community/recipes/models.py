@@ -5,26 +5,26 @@ from multiselectfield import MultiSelectField
 
 User = get_user_model()
 
-vegetarian = 100
-macrobiotic = 150
-mediterrenean = 160
-vegan = 170
-raw = 180
-old = 190
-fastfood = 200
-baking = 210
-glutfree = 220
+VEGETARIAN = 100
+MACROBIOTIC = 150
+MEDITERRENEAN = 160
+VEGAN = 170
+RAW = 180
+OLD = 190
+FASTFOOD = 200
+BAKING = 210
+GLUTFREE = 220
 
 TAG_CHOICES = (
-    (vegetarian, 'vegetarian'),
-    (macrobiotic, 'macrobiotic diet'),
-    (mediterrenean, 'mediterrenean diet'),
-    (vegan, 'vegan diet'),
-    (raw, 'raw food'),
-    (old, 'old recipes'),
-    (fastfood, 'fastfood'),
-    (baking, 'baking'),
-    (glutfree, 'gluten free')
+    (VEGETARIAN, 'vegetarian'),
+    (MACROBIOTIC, 'macrobiotic diet'),
+    (MEDITERRENEAN, 'mediterrenean diet'),
+    (VEGAN, 'vegan diet'),
+    (RAW, 'raw food'),
+    (OLD, 'old recipes'),
+    (FASTFOOD, 'fastfood'),
+    (BAKING, 'baking'),
+    (GLUTFREE, 'gluten free')
 )
 
 
@@ -73,6 +73,17 @@ class Recipe(models.Model):
                                     auto_now_add=True)
     tags = MultiSelectField(verbose_name='Tags', choices=TAG_CHOICES)
 
+    class Meta:
+        ordering = ['-pub_date']
+        verbose_name = 'Recipe'
+        verbose_name_plural = 'Recipes'
+
+    def __str__(self):
+        return self.title
+
+    def get_absolute_url(self):
+        return '/%s/' % self.id
+
     def display_tags_as_list(self):
         """Create a list for the Tag.
            This is required to display tags in Recipe's page."""
@@ -107,21 +118,6 @@ class Recipe(models.Model):
         """Create a string for the favorite_for field.
            This is required to display tags in Admin."""
         return str(self.favorite_for.all().count()) + ' times'
-
-    display_tags_as_list.short_description = 'list_of_tags'
-    display_ingredients.short_description = 'ingredients'
-    display_bookmarked.short_description = 'bookmarked'
-
-    class Meta:
-        ordering = ['-pub_date']
-        verbose_name = 'Recipe'
-        verbose_name_plural = 'Recipes'
-
-    def __str__(self):
-        return self.title
-
-    def get_absolute_url(self):
-        return '/%s/' % self.id
 
 
 class RecipeIngredient(models.Model):

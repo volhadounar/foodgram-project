@@ -18,7 +18,7 @@
 
 <div class="card-list">
     {% for us in page %}
-        <div class="card-user" data-author="{{us.username}}">
+        <div class="card-user" data-author="{{ us.username }}">
             {% csrf_token %}
             <div class="card-user__header">
                 <h2 class="card-user__title">
@@ -41,7 +41,7 @@
                                     {% if recipe.image %}
                                     <img src="{{ recipe.image.url }}" alt="Image for {{ recipe.title }}" class="recipe__image">
                                     {% endif %}
-                                    <h3 class="recipe__title">{{recipe.title}}</h3>
+                                    <h3 class="recipe__title">{{ recipe.title }}</h3>
                                     <p class="recipe__text"><span class="icon-time"></span>{{ recipe.cooking_time }}min.</p>
                                 </div>
                                 </li>

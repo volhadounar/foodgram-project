@@ -3,21 +3,21 @@ from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 from django.views.generic.detail import SingleObjectMixin
 
 
-class MySingleObjectMixin(SingleObjectMixin):
+class OwnerSingleObjectMixin(SingleObjectMixin):
     def get_queryset(self):
         qs = super().get_queryset()
         return qs.filter(from_who=self.request.user)
 
 
-class OwnerListView(LoginRequiredMixin, MySingleObjectMixin, ListView):
+class OwnerListView(LoginRequiredMixin, OwnerSingleObjectMixin, ListView):
     pass
 
 
-class OwnerUpdateView(LoginRequiredMixin, MySingleObjectMixin, UpdateView):
+class OwnerUpdateView(LoginRequiredMixin, OwnerSingleObjectMixin, UpdateView):
     pass
 
 
-class OwnerDeleteView(LoginRequiredMixin, MySingleObjectMixin, DeleteView):
+class OwnerDeleteView(LoginRequiredMixin, OwnerSingleObjectMixin, DeleteView):
     pass
 
 

@@ -1,3 +1,4 @@
+from django.conf.urls import handler404, handler500
 from django.urls import path
 
 from . import views
@@ -29,3 +30,6 @@ urlpatterns = [
          name='recipe_order'),
     path('download/', views.orders_view, name='orderlist')
 ]
+
+handler404 = "recipes.views.page_not_found"  # noqa
+handler500 = "recipes.views.server_error"  # noqa
