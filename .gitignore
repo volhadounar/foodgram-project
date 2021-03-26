@@ -120,8 +120,7 @@ venv.bak/
 # mkdocs documentation
 /site
 
-
-/recipe_community/media/image/
+/recipe_community/media/
 /recipe_community/static/admin/
 
 # mypy
