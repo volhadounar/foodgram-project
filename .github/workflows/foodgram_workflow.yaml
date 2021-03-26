@@ -23,7 +23,7 @@ jobs:
       run: flake8 .
 
     - name: Test with pytest
-      run: python manage.py test
+      run: python recipe_community/manage.py test
 
 
   build_and_push_to_docker_hub:
