@@ -5,7 +5,7 @@ Site Foodgram
 This is an online service where users can publish recipes, subscribe to another user, add recipes to the favorite list, and download a summary list of products needed to prepare one or more selected dishes before going to the store.
 
 The project is deployed at a remote server http://saludformula.tk (http://178.154.198.136)
-You can folow admin site http://saludformula.tk/admin/ or 
+You can follow admin site http://saludformula.tk/admin/ or 
 http://178.154.198.136/admin using credentials: username:admin, password:2203.
 
 Tech stack: Python3, Django Framework, HTTP, HTTPS, Pillow, django-filter,  Gunicorn, Nginx, Linux, Docker, Visual Studio Code, Yandex Cloud, GitHubActions.
