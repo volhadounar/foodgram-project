@@ -14,9 +14,11 @@ SECRET_KEY = '-kfm8c73n$7fz(*&2v_9)1@u3^25rxzeucz@vi9y-vh-f0!6&0'
 DEBUG = False
 
 ALLOWED_HOSTS = [
-    'web',
     '127.0.0.1',
+    'web',
     '178.154.198.136',
+    'saludformula.tk',
+    'www.saludformula.tk',
     '[::1]',
     'testserver',
 ]
