@@ -22,7 +22,7 @@ jobs:
     - name: Lint with flake8
       run: flake8 .
 
-    - name: Test with pytest
+    - name: Test with dj tests
       run: python recipe_community/manage.py test
 
 
