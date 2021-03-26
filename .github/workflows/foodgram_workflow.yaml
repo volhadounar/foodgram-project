@@ -22,9 +22,6 @@ jobs:
     - name: Lint with flake8
       run: flake8 .
 
-    - name: Test with dj tests
-      run: python recipe_community/manage.py test
-
 
   build_and_push_to_docker_hub:
     name: Push Docker image to Docker Hub
