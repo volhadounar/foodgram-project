@@ -121,8 +121,8 @@ venv.bak/
 /site
 
 
-recipe_community/media/image
-recipe_community/static/admin/
+/recipe_community/media/image/
+/recipe_community/static/admin/
 
 # mypy
 .mypy_cache/
