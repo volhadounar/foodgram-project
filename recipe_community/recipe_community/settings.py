@@ -11,13 +11,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = '-kfm8c73n$7fz(*&2v_9)1@u3^25rxzeucz@vi9y-vh-f0!6&0'
 
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
-    "localhost",
-    "127.0.0.1",
-    "[::1]",
-    "testserver",
+    'web',
+    '127.0.0.1',
+    '178.154.198.136',
+    '[::1]',
+    'testserver',
 ]
 
 
@@ -109,9 +110,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, "static"),
-)
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

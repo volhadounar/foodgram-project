@@ -35,6 +35,7 @@ class Ingredient(models.Model):
         unique=True)
 
     class Meta:
+        ordering = ['name']
         verbose_name = 'Ingredient'
         verbose_name_plural = 'Ingredients'
 
