@@ -119,8 +119,11 @@ venv.bak/
 
 # mkdocs documentation
 /site
-/media/image/
-/static/admin
+
+
+recipe_community/media/image
+recipe_community/static/admin/
+
 # mypy
 .mypy_cache/
 .dmypy.json
