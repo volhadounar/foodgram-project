@@ -41,7 +41,7 @@ Profile:
 {% endblock %}
 {% block content %}
 
-    <div class="author-subscribe" data-author="{{owner.username}}">
+    <div class="author-subscribe" data-author="{{ owner.username }}">
         {% if user.is_authenticated %}
             {% if owner != user %}
             {% csrf_token %}

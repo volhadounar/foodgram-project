@@ -3,7 +3,6 @@ from django.core.paginator import Paginator
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
-from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 from django.views.generic import DetailView, ListView, UpdateView
 
@@ -268,16 +267,3 @@ def orders_view(request):
     buffer = BuildPdf(res, request.user)
     return FileResponse(buffer, as_attachment=True,
                         filename='shoppinglist.pdf')
-
-
-def page_not_found(request, exception):
-    return render(
-        request,
-        "misc/404.html",
-        {"path": request.path},
-        status=404
-    )
-
-
-def server_error(request):
-    return render(request, "misc/500.html", status=500)
