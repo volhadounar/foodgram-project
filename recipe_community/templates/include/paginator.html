@@ -7,9 +7,7 @@
       <a class="pagination__link link" href="?{% url_replace request 'page' page.previous_page_number %}"><span class="icon-left"></span></a>
     </li>
     {% else %}
-    <li class="pagination__item disabled">
-        <span class="icon-left"></span>
-    </li>
+    <li class="pagination__item disabled"><a class="pagination__link link"><span class="icon-left"></span></a></li>
     {% endif %}
 
     {% for i in page.paginator.page_range %}
