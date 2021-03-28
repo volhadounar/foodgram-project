@@ -241,6 +241,7 @@ class OrderChangeView(CreateDeleteView):
         if self.request.user.is_authenticated:
             Order.objects.filter(user=self.request.user,
                                  recipe=recipe).delete()
+            return redirect(reverse_lazy('recipes:order_list'))
         elif 'ordered_recipes' not in self.request.session:
             return redirect(reverse_lazy('recipes:order_list'))
         recipe_list_ids = self.request.session['ordered_recipes']
