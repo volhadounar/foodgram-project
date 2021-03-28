@@ -121,4 +121,4 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 SITE_ID = 1
 
-PAGINATION_CNT_ON_PAGE = 9
+PAGINATION_CNT_ON_PAGE = 3
