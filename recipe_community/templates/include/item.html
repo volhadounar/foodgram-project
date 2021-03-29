@@ -33,7 +33,7 @@
                 </a>
             </p>
            
-            {% if recipe.from_who == user %}
+            {% if recipe.from_who == user or user.is_staff%}
                 <p>
                 <a class="button" href="{% url 'recipes:recipe_update' recipe.id %}" target="_blank">Edit</a>
                 <a class="button" href="{% url 'recipes:recipe_delete' recipe.id %}" target="_blank">Delete</a>

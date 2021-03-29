@@ -14,8 +14,8 @@
 {% block content %} 
 
     <div class="card-list card-list_column">
-        <ul class="shopping-list">
-            {% for recipe in page %}
+        <ul class="shopping-list" >
+            {% for recipe in recipe_list %}
             <li class="shopping-list__item" data-id="{{ recipe.id }}">
                 <div class="recipe recipe_reverse">
                     {% if recipe.image %}
@@ -39,7 +39,6 @@
         </ul>
         <a href="{% url 'recipes:orderlist' %}"><button class="button button_style_blue">Download list</button></a>
     </div>
-
 {% block static %}
     <script src="{% static 'recipes/js/config/config.js' %}"></script>
     <script src="{% static 'recipes/js/components/ShopList.js' %}"></script>

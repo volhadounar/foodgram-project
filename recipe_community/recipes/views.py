@@ -194,11 +194,6 @@ class OrderListView(ListView):
         recipe_list = Recipe.objects.filter(id__in=ordered_ids)
         return recipe_list
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        put_filtered_paged_recipe_list(self.request, context)
-        return context
-
 
 class FollowChangeView(CreateDeleteOwnedView):
     def post(self, *args, **kwargs):

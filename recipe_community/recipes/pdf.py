@@ -3,6 +3,7 @@ from datetime import date
 
 from reportlab.pdfgen import canvas
 
+CNT_ON_PAGE = 35
 
 def makeHeader(canvas, user):
     if user.is_authenticated:
@@ -22,9 +23,20 @@ def BuildPdf(data, user):
     textobject.setFont('Helvetica', 12)
     textobject.textLine('Shopping list:')
     textobject.textLine('')
+    cur_cnt = 0
     for ingredient, inf in data.items():
         textobject.textLine(text=ingredient + ' - '
-                            + str(inf[0]) + ' ' + inf[1])
+                                + str(inf[0]) + ' ' + inf[1])
+        cur_cnt += 1
+        if cur_cnt >= CNT_ON_PAGE:
+            p.drawText(textobject)
+            textobject = p.beginText()
+            textobject.setTextOrigin(40, 100)
+            textobject.setFont('Helvetica', 12)
+            textobject.textLine('Shopping list:')
+            textobject.textLine('')
+            p.showPage()
+            cur_cnt = 0
 
     p.drawText(textobject)
     p.showPage()
