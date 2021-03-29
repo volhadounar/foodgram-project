@@ -25,7 +25,7 @@ def BuildPdf(data, user):
     textobject.textLine('Shopping list:')
     textobject.textLine('')
     cur_cnt = 0
-    sorted_data = sorted(data.items(), key=lambda x: x[0])
+    sorted_data = sorted(data.items())
     for ingredient, inf in sorted_data:
         textobject.textLine(text=ingredient + ' - '
                             + str(inf[0]) + ' ' + inf[1])

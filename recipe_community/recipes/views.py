@@ -196,6 +196,10 @@ class OrderListView(ListView):
 
 
 class FollowChangeView(CreateDeleteOwnedView):
+    def del_record(self, user, author_name):
+        author = get_object_or_404(User, username=author_name)
+        Follow.objects.filter(user=user, author=author).delete()
+
     def post(self, *args, **kwargs):
         username = kwargs.get('username', '')
         if self.request.user.get_username() == username:
@@ -205,19 +209,17 @@ class FollowChangeView(CreateDeleteOwnedView):
         return JsonResponse({'success': 'true'})
 
     def delete(self, *args, **kwargs):
-        username = kwargs.get('username', '')
-        if self.request.user.get_username() == username:
+        author_name = kwargs.get('username', '')
+        if self.request.user.get_username() == author_name:
             return JsonResponse({'success': 'false'})
-        author = get_object_or_404(User, username=username)
-        Follow.objects.filter(user=self.request.user, author=author).delete()
+        self.del_record(self.request.user, author_name)
         return JsonResponse({'success': 'true'})
 
     def delete_html(self, *args, **kwargs):
-        username = kwargs.get('username', '')
-        if self.request.user.get_username() == username:
-            return JsonResponse({'success': 'false'})
-        author = get_object_or_404(User, username=username)
-        Follow.objects.filter(user=self.request.user, author=author).delete()
+        author_name = kwargs.get('username', '')
+        if self.request.user.get_username() == author_name:
+            return redirect(reverse_lazy('recipes:subcriptions'))
+        self.del_record(self.request.user, author_name)
         return redirect(reverse_lazy('recipes:subcriptions'))
 
 
