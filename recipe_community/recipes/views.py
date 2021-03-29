@@ -212,6 +212,14 @@ class FollowChangeView(CreateDeleteOwnedView):
         Follow.objects.filter(user=self.request.user, author=author).delete()
         return JsonResponse({'success': 'true'})
 
+    def delete_html(self, *args, **kwargs):
+        username = kwargs.get('username', '')
+        if self.request.user.get_username() == username:
+            return JsonResponse({'success': 'false'})
+        author = get_object_or_404(User, username=username)
+        Follow.objects.filter(user=self.request.user, author=author).delete()
+        return redirect(reverse_lazy('recipes:subcriptions'))
+
 
 class OrderChangeView(CreateDeleteView):
     def post(self, *args, **kwargs):

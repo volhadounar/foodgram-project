@@ -54,9 +54,11 @@
                 </ul>
             </div>
   
-            <div class="card-user__footer">
-                <button class="button button_style_light-blue button_size_auto" name="subscribe">Unsubscribe</button>
-            </div>
+            <form method="post" action="{% url 'recipes:profile_follow' username=us.username %}" >
+                {% csrf_token %}
+                <input type="hidden" name="_method" value="delete">
+                <input class="button button_style_light-blue button_size_auto" type="submit" value="Unsubscribe">
+            </form>
 
         </div>
     {% endfor %}
