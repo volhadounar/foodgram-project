@@ -5,6 +5,7 @@ from reportlab.pdfgen import canvas
 
 CNT_ON_PAGE = 35
 
+
 def makeHeader(canvas, user):
     if user.is_authenticated:
         canvas.drawString(40, 100, 'User first name: ' + user.first_name)
@@ -26,7 +27,7 @@ def BuildPdf(data, user):
     cur_cnt = 0
     for ingredient, inf in data.items():
         textobject.textLine(text=ingredient + ' - '
-                                + str(inf[0]) + ' ' + inf[1])
+                            + str(inf[0]) + ' ' + inf[1])
         cur_cnt += 1
         if cur_cnt >= CNT_ON_PAGE:
             p.drawText(textobject)
