@@ -8,13 +8,12 @@
 {% block nav %}
     {% include 'include/nav.html' %}
 {% endblock %}
+{% block header %} My subscriptions {% endblock %}
 {% block content %} 
 
 {% load thumbnail %} 
 {% load user_filters %}
 {% load static %}
-
-{% block header %} My subscriptions {% endblock %}
 
 <div class="card-list">
     {% csrf_token %}
