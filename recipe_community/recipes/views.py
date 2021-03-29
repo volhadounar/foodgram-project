@@ -202,7 +202,6 @@ class OrderListView(ListView):
 
 class FollowChangeView(CreateDeleteOwnedView):
     def post(self, *args, **kwargs):
-        print('post')
         username = kwargs.get('username', '')
         if self.request.user.get_username() == username:
             return JsonResponse({'success': 'false'})
@@ -211,7 +210,6 @@ class FollowChangeView(CreateDeleteOwnedView):
         return JsonResponse({'success': 'true'})
 
     def delete(self, *args, **kwargs):
-        print('delete')
         username = kwargs.get('username', '')
         if self.request.user.get_username() == username:
             return JsonResponse({'success': 'false'})
