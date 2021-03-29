@@ -45,7 +45,7 @@
     <div class="card__footer">
         {% if user.is_authenticated %}
             {% if recipe|is_bought:user %}
-                <button class="button button_style_light-blue" name="purchases"><span class="icon-plus button__icon"></span>Remove from shopping list</button>
+                <button class="button button_style_light-blue-outline" name="purchases"><span class="icon-check button__icon"></span>Remove from shopping list</button>
             {% else %}
                 <button class="button button_style_light-blue" name="purchases" data-out><span class="icon-plus button__icon"></span>Buy</button>
             {% endif %}
@@ -56,9 +56,9 @@
             {% endif %}
         {% else %}
             {% if recipe.id in request.session.ordered_recipes %}
-            <button class="button button_style_light-blue" name="purchases"><span class="icon-plus button__icon"></span>Remove from shopping list</button>
+                <button class="button button_style_light-blue-outline" name="purchases"><span class="icon-check button__icon"></span>Remove from shopping list</button>
             {% else %}
-            <button class="button button_style_light-blue" name="purchases" data-out><span class="icon-plus button__icon"></span>Buy</button>
+                <button class="button button_style_light-blue" name="purchases" data-out><span class="icon-plus button__icon"></span>Buy</button>
             {% endif %}
         {% endif %}
     </div>

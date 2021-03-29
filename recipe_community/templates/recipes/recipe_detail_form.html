@@ -62,32 +62,31 @@
         </div>
         <ul class="single-card__items">
            
-            
         
         {% if user.is_authenticated %}
             {% if recipe|is_bought:user %}
-                <button class="button button_style_light-blue" name="purchases"><span class="icon-plus button__icon"></span>Remove from shopping list</button>
+            <li class="single-card__item"><button class="button button_style_light-blue-outline" name="purchases"><span class="icon-check button__icon"></span>Remove from shopping list</button></li>
             {% else %}
-                <button class="button button_style_light-blue" name="purchases" data-out><span class="icon-plus button__icon"></span>Buy</button>
+            <li class="single-card__item"><button class="button button_style_blue" name="purchases" data-out><span class="icon-plus button__icon"></span>Buy</button></li>
             {% endif %}
 
             {% if recipe.from_who != user %}
                 {% if following %}
-                <button class="button button_style_light-blue button_size_subscribe" name="subscribe" >
+                <li class="single-card__item"><button class="button button_style_blue button_size_subscribe" name="subscribe" >
                     Unsubscribe
-                </button>
+                </button></li>
                 {% else %}
-                <button class="button button_style_light-blue button_size_subscribe" name="subscribe" data-out>
+                <li class="single-card__item"><button class="button button_style_blue button_size_subscribe" name="subscribe" data-out>
                     Subscribe
-                </button>
+                </button></li>
                 {% endif %}
             {% endif %}
         {% else %}
             {% if recipe.id in request.session.ordered_recipes %}
-            <button class="button button_style_light-blue" name="purchases"><span class="icon-plus button__icon"></span>Remove from shopping list</button>
-            {% else %}
-            <button class="button button_style_light-blue" name="purchases" data-out><span class="icon-plus button__icon"></span>Buy</button>
-            {% endif %}
+            <li class="single-card__item"><button class="button button_style_light-blue" name="purchases"><span class="icon-plus button__icon"></span>Remove from shopping list</button>
+            {% else %}</li>
+            <li class="single-card__item"><button class="button button_style_light-blue" name="purchases" data-out><span class="icon-plus button__icon"></span>Buy</button>
+            {% endif %}</li>
         {% endif %}
         </ul>
         <div class="single-card__section">

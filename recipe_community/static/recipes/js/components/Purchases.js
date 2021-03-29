@@ -8,6 +8,7 @@ class Purchases {
         target.setAttribute('disabled', true);
         this.api.addPurchases(cardId)
             .then( e => {
+                console.log("Second log");
                 target.innerHTML = this.config.active.text;
                 target.classList.remove(this.config.default.class);
                 target.classList.add(this.config.active.class);

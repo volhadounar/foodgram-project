@@ -14,33 +14,32 @@ Profile:
 {% block nav %} 
     {% include 'include/nav.html' %}
 {% endblock %}
-{% block header %}
-    {% if user.is_authenticated %}
-    <h1 class="card__text">You authenticated as</h1>
-    <pre class="card__text">
-        {% if user.get_full_name %}
-        Name: {{ user.get_full_name }}
-        {% else %}
-        Name: {{ user.username }}
-        {% endif %}
-        Email: {{ user.email }}
-    </pre>
-    {% else %}
-    <p class="card__text">You are not logged in</p>
-    <p class="card__text">You can <a href="{% url 'login' %}?next={{ request.path }}">Login</a> if you like.</p>
-    {% endif %}
 
-    <h1 class="main__title">Profile belongs to:
+
+{% block userinf %}
+{% if user.is_authenticated %}
+<p><h1 class="card__text">You authenticated as</h1>
+    {% if user.get_full_name %}
+    <p class="card__text">Name: {{ user.get_full_name }} </p>
+    {% else %}
+    <p class="card__text">Name: {{ user.username }}</p>
+    {% endif %}
+    <p class="card__text">Email: {{ user.email }}</p>
+</p>
+{% else %}
+<p class="card__text">You are not logged in</p>
+<p class="card__text">You can <a href="{% url 'login' %}?next={{ request.path }}">Login</a> if you like.</p>
+{% endif %}
+{% endblock %}
+
+{% block header %}
+    <p>Profile:
         {% if owner.get_full_name %}
         {{ owner.get_full_name }}
         {% else %}
         {{ owner.username }}
         {% endif %}
-    </h1>
-    {% include 'include/header_container.html' %} 
-{% endblock %}
-{% block content %}
-
+    </p>
     <div class="author-subscribe" data-author="{{ owner.username }}">
         {% if user.is_authenticated %}
             {% if owner != user %}
@@ -59,8 +58,15 @@ Profile:
             {% endif %}
         {% endif %}
     </div>
+{% endblock %}
+
+{% block tag_flt %} 
+
+{% include 'include/tagfilter.html' %} {% endblock %}
+{% block content %}
 
     <div class="card-list" >
+        {% csrf_token %}
         {% load static %}
         {% for recipe in page %}
             {% include 'include/item.html' with recipe=recipe %}

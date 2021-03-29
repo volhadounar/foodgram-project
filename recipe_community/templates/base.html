@@ -14,12 +14,17 @@
     {% block nav %}{% endblock %}
     </header>
     <main>
-        <div class="main container">
+    <div class="main container">
+        <p>{% block userinf %}{% endblock %}</p>
+        <div class="main__header">
             <h1 class="main__title">{% block header %}{% endblock %}</h1>
-            {% block error%} {% endblock %}
-            {% block content %}
-            {% endblock %}
+            {% block tag_flt %}{% endblock %}
         </div>
+        <div>
+            {% block error %}{% endblock %}
+            {% block content %}{% endblock %}
+        </div>
+    </div>
     </main>
     {% include 'include/footer.html' %}
     {% block static %}{% endblock %}

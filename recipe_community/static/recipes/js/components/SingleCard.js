@@ -1,5 +1,7 @@
 class SingleCard extends MainCards{
+    
     constructor(container, card, counter, api, userAuth,button) {
+        console.log('dewvdjv')
         super(container, card, counter, api, userAuth,button);
         this.tooltipAdd = this.tooltipAdd.bind(this);
         this.tooltipDel = this.tooltipDel.bind(this)

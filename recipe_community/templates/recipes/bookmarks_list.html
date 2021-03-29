@@ -7,11 +7,12 @@
 {% block nav %}
     {% include 'include/nav.html' %}
 {% endblock %}
-{% block header %} {% include 'include/header_container.html' %} {% endblock %}
-{% block content %} 
+{% block header %} Bookmarked {% endblock %}
+{% block tag_flt %} {% include 'include/tagfilter.html' %} {% endblock %}
+{% block content %}
 
 {% csrf_token %}
-{% load thumbnail %} 
+{% load thumbnail %}
 {% load user_filters %}
 {% load static %}
 

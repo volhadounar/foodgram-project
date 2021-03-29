@@ -7,10 +7,8 @@ class CreateDeleteView(View):
 
     def dispatch(self, *args, **kwargs):
         method = self.request.POST.get('_method', '').lower()
-        if method == 'post':
-            return self.post(*args, **kwargs)
         if method == 'delete':
-            return self.delete(*args, **kwargs)
+            return self.delete_html(*args, **kwargs)
         return super().dispatch(*args, **kwargs)
 
 

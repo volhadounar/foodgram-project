@@ -13,7 +13,7 @@
             {% url 'logout' as url_logout %}
 
 
-
+            {{ user.orders.count }}
             <li {% if request.resolver_match.url_name == 'index' %} class="nav__item nav__item_active"{% else %} class="nav__item" {% endif %}>
                 <a href="{{ url_index }}" class="nav__link link">Recipes</a>
             </li>
@@ -26,7 +26,8 @@
                 <a href="{{ url_bookmarks }}" class="nav__link link">Bookmarked</a>
             </li>
             <li {% if request.resolver_match.url_name == 'order_list' %} class="nav__item nav__item_active"{% else %} class="nav__item" {% endif %}>
-                <a href="{{ url_order_list }}" class="nav__link link">Shopping list</a> <span class="badge badge_style_blue nav__badge" id="counter">{{ user.orders.count }}</span>
+                <a href="{{ url_order_list }}" class="nav__link link">Shopping list</a> 
+                <span class="badge badge_style_blue nav__badge" id="counter">{{ user.ordered_recipes.count }}</span>
             </li>
         </ul>
         <ul class="nav__items list">
@@ -49,7 +50,7 @@
                 <a href="{{ url_index }}" class="nav__link link">Recipes</a>
             </li>
             <li {% if request.resolver_match.url_name == 'order_list' %} class="nav__item nav__item_active"{% else %} class="nav__item" {% endif %}>
-                <a href="{{ url_order_list }}" class="nav__link link">Shopping list <span class="badge badge_style_blue nav__badge" id="counter">{{ user.orders.count }}</span></a>
+                <a href="{{ url_order_list }}" class="nav__link link">Shopping list <span class="badge badge_style_blue nav__badge" id="counter">{{  request.session.ordered_recipes|length }}</span></a>
             </li>
         </ul>
         <ul class="nav__items list">

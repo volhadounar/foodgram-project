@@ -17,9 +17,9 @@
 {% block header %} My subscriptions {% endblock %}
 
 <div class="card-list">
+    {% csrf_token %}
     {% for us in page %}
         <div class="card-user" data-author="{{ us.username }}">
-            {% csrf_token %}
             <div class="card-user__header">
                 <h2 class="card-user__title">
                     {% if us.get_full_name %}
@@ -54,16 +54,15 @@
                     </li>
                 </ul>
             </div>
-       
+  
             <div class="card-user__footer">
                 <button class="button button_style_light-blue button_size_auto" name="subscribe">Unsubscribe</button>
             </div>
+
         </div>
     {% endfor %}
     
 </div>
-
-
 
 
 {% include 'include/paginator.html' %}
@@ -81,4 +80,3 @@
 
 {% endblock %}
 
-    

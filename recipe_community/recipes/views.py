@@ -1,6 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 from django.http import FileResponse
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
@@ -159,14 +160,14 @@ class BookmarkChangeView(CreateDeleteOwnedView):
         pk = kwargs.get('pk', 0)
         recipe = get_object_or_404(Recipe, id=pk)
         Bookmark.objects.get_or_create(user=self.request.user, recipe=recipe)
-        return redirect(reverse_lazy('recipes:bookmarks'))
+        return JsonResponse({'success': 'true'})
 
     def delete(self, *args, **kwargs):
         pk = kwargs.get('pk', 0)
         recipe = get_object_or_404(Recipe, id=pk)
         Bookmark.objects.filter(user=self.request.user,
                                 recipe=recipe).delete()
-        return redirect(reverse_lazy('recipes:bookmarks'))
+        return JsonResponse({'success': 'true'})
 
 
 class BookmarksListView(LoginRequiredMixin, ListView):
@@ -201,23 +202,22 @@ class OrderListView(ListView):
 
 class FollowChangeView(CreateDeleteOwnedView):
     def post(self, *args, **kwargs):
+        print('post')
         username = kwargs.get('username', '')
         if self.request.user.get_username() == username:
-            return redirect(reverse('recipes:profile',
-                                    args=[self.request.user.id]))
+            return JsonResponse({'success': 'false'})
         author = get_object_or_404(User, username=username)
         Follow.objects.get_or_create(user=self.request.user, author=author)
-        return redirect(reverse('recipes:profile',
-                                args=[self.request.user.id]))
+        return JsonResponse({'success': 'true'})
 
     def delete(self, *args, **kwargs):
+        print('delete')
         username = kwargs.get('username', '')
         if self.request.user.get_username() == username:
-            return redirect(reverse('recipes:index'))
+            return JsonResponse({'success': 'false'})
         author = get_object_or_404(User, username=username)
         Follow.objects.filter(user=self.request.user, author=author).delete()
-        return redirect(reverse('recipes:profile',
-                                args=[self.request.user.id]))
+        return JsonResponse({'success': 'true'})
 
 
 class OrderChangeView(CreateDeleteView):
@@ -233,9 +233,24 @@ class OrderChangeView(CreateDeleteView):
             if pk not in recipe_list_ids:
                 recipe_list_ids.append(pk)
             self.request.session['ordered_recipes'] = recipe_list_ids
-        return redirect(reverse_lazy('recipes:order_list'))
+        return JsonResponse({'success': 'true'})
 
     def delete(self, *args, **kwargs):
+        pk = kwargs.get('pk', 0)
+        recipe = get_object_or_404(Recipe, id=pk)
+        if self.request.user.is_authenticated:
+            Order.objects.filter(user=self.request.user,
+                                 recipe=recipe).delete()
+            return JsonResponse({'success': 'true'})
+        elif 'ordered_recipes' not in self.request.session:
+            return JsonResponse({'success': 'false'})
+        recipe_list_ids = self.request.session['ordered_recipes']
+        index = recipe_list_ids.index(pk)
+        del recipe_list_ids[index]
+        self.request.session['ordered_recipes'] = recipe_list_ids
+        return JsonResponse({'success': 'true'})
+
+    def delete_html(self, *args, **kwargs):
         pk = kwargs.get('pk', 0)
         recipe = get_object_or_404(Recipe, id=pk)
         if self.request.user.is_authenticated:

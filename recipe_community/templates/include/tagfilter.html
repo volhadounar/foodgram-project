@@ -1,0 +1,14 @@
+<ul class="tags">
+    <p>
+        {% if tag_filter %}
+        <form  method="get">
+            {% for field in tag_filter.form.tags %}
+            <li class="tags__item">
+                <span  class="tags__label"> {{ field.tag }} {{ field.choice_label }}</span>
+            </li>
+            {% endfor %}
+            <button class="button button_style_light-blue" type="submit">Filter</button>
+        </form>
+        {% endif %}
+    </p>
+</ul>
