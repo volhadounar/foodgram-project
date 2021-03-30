@@ -1,4 +1,12 @@
 {% extends "base.html" %}
+{% block head %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'recipes/pages/form.css' %}">
+{% endblock %}
+{% block nav %}
+    {% include 'include/nav.html' %}
+{% endblock %}
+
 {% block content %}
 {% block header %}
 Delete Recipe
@@ -7,6 +15,6 @@ Delete Recipe
 
 <form action="" method="POST">
   {% csrf_token %}
-  <input type="submit" value="Yes, delete.">
+  <input class="button button_style_blue" type="submit" value="Yes, delete.">
 </form>
 {% endblock %}
